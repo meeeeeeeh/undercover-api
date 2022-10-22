@@ -14,17 +14,4 @@ class OVPNFileSerializer(serializers.ModelSerializer):
         fields = ['id',
                   'file_name',
                   'file_version',
-                  'client',
-                  'dev',
-                  'proto',
-                  'remote',
-                  'resolv_retry',
-                  'nobind',
-                  'persist_key',
-                  'persist_tun',
-                  'remote_sert_tls',
-                  'auth',
-                  'cipher',
-                  'ignore_unknown_option',
-                  'block_outside_dns',
-                  'verb']
+                  'file_settings']

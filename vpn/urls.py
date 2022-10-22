@@ -21,17 +21,13 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
 schema_view = get_schema_view(
-   openapi.Info(
-      title="Snippets API",
-      default_version='v1',
-      description=r"""Для регистрации пользователя необходимо отправить POST-запрос следующего вида: {'email': 'email', 'username': 'username', 'password': 'password'} на .../users/registration/ 
-                      Для авторизации пользователя необходимо отправить POST-запрос следующего вида: {'email':'email', 'password':'password'} на .../users/login
-                      /versions/ - версия приложения
-                      /redoc - документация""",
+    openapi.Info(
+        title="Snippets API",
+        default_version='v1',
 
-   ),
-   public=True,
-   permission_classes=(permissions.AllowAny,),
+    ),
+    public=False,
+    permission_classes=[permissions.AllowAny],
 )
 
 urlpatterns = [
