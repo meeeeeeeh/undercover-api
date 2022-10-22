@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from rest_framework.generics import RetrieveUpdateAPIView, CreateAPIView, UpdateAPIView
+from rest_framework.generics import RetrieveUpdateAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -58,3 +58,15 @@ class LogoutAllView(APIView):
 
         return Response(status=status.HTTP_205_RESET_CONTENT)
 
+
+class DeleteUserView(DestroyAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        try:
+            instance = self.queryset.get(email=self.request.user.email)
+            return instance
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
