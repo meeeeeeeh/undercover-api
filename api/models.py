@@ -8,7 +8,7 @@ class Version(models.Model):
 class OVPNFile(models.Model):
     file_name = models.CharField(max_length=100)
     file_version = models.IntegerField(default=0)
-    file_settings = models.TextField(max_length=4000)
+    file_settings = models.TextField(max_length=10000)
 
 
 class Secret(models.Model):
