@@ -4,17 +4,20 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.validators import UniqueValidator
 
 from .models import User
+import secrets
+import string
+import smtplib
 
 
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super(MyTokenObtainPairSerializer, cls).get_token(user)
-
-        token['id'] = user.id
-        token['email'] = user.email
-        return token
-
+# class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+#     @classmethod
+#     def get_token(cls, user):
+#         token = super(MyTokenObtainPairSerializer, cls).get_token(user)
+#
+#         token['id'] = user.id
+#         token['email'] = user.email
+#         return token
+#
 
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
@@ -123,5 +126,40 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         instance.email = validated_data['email']
 
         instance.save()
+
+        return instance
+
+
+class ResetPasswordSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(required=True)
+
+    class Meta:
+        model = User
+        fields = ('email',)
+
+    def validate_email(self, value):
+        user = self.context['request'].user
+        if not User.objects.exclude(pk=user.pk).filter(email=value).exists():
+            raise serializers.ValidationError({"email": "This email does not exists."})
+        return value
+
+    def update(self, instance, validated_data):
+        user = self.context['request'].user
+
+        # instance.email = validated_data['email']
+        #
+        # instance.save()
+
+        alphabet = string.ascii_letters + string.digits
+        password = ''.join(secrets.choice(alphabet) for i in range(10))
+        instance.set_password(password)
+        instance.save()
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server.login("testmail322878@gmail.com", "thoc yuro ucji hdiz")
+        server.sendmail(
+            "testmail322878@gmail.com",
+            instance.email,
+            f"password - {password}")
+        server.quit()
 
         return instance

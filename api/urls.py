@@ -5,10 +5,9 @@ from .views import *
 app_name = 'api'
 
 urlpatterns = [
-    path('versions/', VersionList.as_view()),
-    path('versions/<int:pk>', VersionDetail.as_view()),
-    path('vpn_files/', OVPNFileList.as_view()),
-    path('vpn_files/<int:pk>', OVPNFileDetail.as_view())
+    path('version/<str:secret>', VersionList.as_view()),
+    path('vpn_files/<str:secret>', OVPNFileList.as_view()),
+    path('vpn_files/<str:file_name>/<str:secret>', OVPNFileDetail.as_view())
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
