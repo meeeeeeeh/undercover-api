@@ -79,7 +79,7 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-    def put(self, request, email,  secret):
+    def put(self, request, email, secret):
         secret1 = Secret.objects.all()[0]
         encoded_secret1 = secret1.secret.encode()
         result_secret1 = hashlib.sha256(encoded_secret1).hexdigest()
@@ -107,6 +107,26 @@ class ChangePasswordView(UpdateAPIView):
     lookup_field = 'email'
     swagger_schema = None
 
+    def put(self, request, email, secret):
+        secret1 = Secret.objects.all()[0]
+        encoded_secret1 = secret1.secret.encode()
+        result_secret1 = hashlib.sha256(encoded_secret1).hexdigest()
+
+        if secret == result_secret1:
+            return self.update(request)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def patch(self, request, email, secret):
+        secret1 = Secret.objects.all()[0]
+        encoded_secret1 = secret1.secret.encode()
+        result_secret1 = hashlib.sha256(encoded_secret1).hexdigest()
+
+        if secret == result_secret1:
+            return self.partial_update(request)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
 
 class UpdateProfileView(UpdateAPIView):
     queryset = User.objects.all()
@@ -114,31 +134,66 @@ class UpdateProfileView(UpdateAPIView):
     serializer_class = UpdateUserSerializer
     lookup_field = 'email'
 
+    def put(self, request, email, secret):
+        secret1 = Secret.objects.all()[0]
+        encoded_secret1 = secret1.secret.encode()
+        result_secret1 = hashlib.sha256(encoded_secret1).hexdigest()
+
+        if secret == result_secret1:
+            return self.update(request)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def patch(self, request, email, secret):
+        secret1 = Secret.objects.all()[0]
+        encoded_secret1 = secret1.secret.encode()
+        result_secret1 = hashlib.sha256(encoded_secret1).hexdigest()
+
+        if secret == result_secret1:
+            return self.partial_update(request)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
 
 class LogoutView(APIView):
     permission_classes = (IsAuthenticated,)
     swagger_schema = None
 
-    def post(self, request):
-        try:
-            refresh_token = request.data['refresh_token']
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            return Response(status=status.HTTP_205_RESET_CONTENT)
-        except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, secret):
+
+        secret1 = Secret.objects.all()[0]
+        encoded_secret1 = secret1.secret.encode()
+        result_secret1 = hashlib.sha256(encoded_secret1).hexdigest()
+
+        if secret == result_secret1:
+            try:
+                refresh_token = request.data['refresh_token']
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+                return Response(status=status.HTTP_205_RESET_CONTENT)
+            except Exception as e:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class LogoutAllView(APIView):
     permission_classes = (IsAuthenticated,)
     swagger_schema = None
 
-    def post(self, request):
-        tokens = OutstandingToken.objects.filter(user_id=request.user.id)
-        for token in tokens:
-            t, _ = BlacklistedToken.objects.get_or_create(token=token)
+    def post(self, request, secret):
+        secret1 = Secret.objects.all()[0]
+        encoded_secret1 = secret1.secret.encode()
+        result_secret1 = hashlib.sha256(encoded_secret1).hexdigest()
 
-        return Response(status=status.HTTP_205_RESET_CONTENT)
+        if secret == result_secret1:
+            tokens = OutstandingToken.objects.filter(user_id=request.user.id)
+            for token in tokens:
+                t, _ = BlacklistedToken.objects.get_or_create(token=token)
+
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class DeleteUserView(DestroyAPIView):
@@ -154,6 +209,16 @@ class DeleteUserView(DestroyAPIView):
         except User.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
+    def delete(self, request, secret):
+        secret1 = Secret.objects.all()[0]
+        encoded_secret1 = secret1.secret.encode()
+        result_secret1 = hashlib.sha256(encoded_secret1).hexdigest()
+
+        if secret == result_secret1:
+            return self.destroy(request)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
 
 class ResetPasswordView(UpdateAPIView):
     permission_classes = (AllowAny,)
@@ -161,3 +226,23 @@ class ResetPasswordView(UpdateAPIView):
     serializer_class = ResetPasswordSerializer
     lookup_field = 'email'
     swagger_schema = None
+
+    def put(self, request, email, secret):
+        secret1 = Secret.objects.all()[0]
+        encoded_secret1 = secret1.secret.encode()
+        result_secret1 = hashlib.sha256(encoded_secret1).hexdigest()
+
+        if secret == result_secret1:
+            return self.update(request)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def patch(self, request, email, secret):
+        secret1 = Secret.objects.all()[0]
+        encoded_secret1 = secret1.secret.encode()
+        result_secret1 = hashlib.sha256(encoded_secret1).hexdigest()
+
+        if secret == result_secret1:
+            return self.partial_update(request)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)

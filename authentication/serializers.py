@@ -1,12 +1,12 @@
+from django.conf import settings
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.validators import UniqueValidator
-
+from django.core.mail import send_mail
 from .models import User
 import secrets
 import string
-import smtplib
 
 
 # class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -154,12 +154,15 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
         password = ''.join(secrets.choice(alphabet) for i in range(10))
         instance.set_password(password)
         instance.save()
-        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        server.login("testmail322878@gmail.com", "thoc yuro ucji hdiz")
-        server.sendmail(
-            "testmail322878@gmail.com",
-            instance.email,
-            f"password - {password}")
-        server.quit()
+        send_mail(
+            'Password reset request',
+            f"""
+                There was a request to change your password!
+                If you did not make this request then please ignore this email.
+                Otherwise, there is your new password: {password}
+                --Undercover Team""",
+            settings.EMAIL_HOST_USER,
+            [instance.email],
+            )
 
         return instance
